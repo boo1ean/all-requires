@@ -3,8 +3,11 @@ var _ = require('lodash');
 var recursive = require('recursive-readdir');
 var fs = require('fs');
 
+// Only js and not from node_modules
 var onlySourceFiles = function(filename) {
-	return filename.slice(filename.length - 3) === '.js';
+	return filename
+		&& filename.slice(filename.length - 3) === '.js'
+		&& filename.indexOf('node_modules') === -1;
 };
 
 var onlyDepenencies = function(filename) {

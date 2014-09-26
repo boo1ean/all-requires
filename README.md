@@ -44,5 +44,9 @@ find('./dir', function(err, requires) {
 });
 ```
 
+## Note
+
+It scans only files with `.js` extension and skips files under `node_modules` dir.
+
 ## LICENSE
 MIT
