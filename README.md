@@ -34,6 +34,8 @@ c.js
 var c = require('c');
 ```
 
+Find all `third-party` dependencies for this dir:
+
 ```javascript
 var find = require('all-requires');
 
