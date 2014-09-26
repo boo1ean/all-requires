@@ -1,0 +1,30 @@
+{
+  "name": "all-requires",
+  "version": "0.0.1",
+  "description": "Get list of all required modules for directory",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boo1ean/all-requires.git"
+  },
+  "keywords": [
+    "requires",
+    "required",
+    "dependencies",
+    "deps"
+  ],
+  "author": "Egor Gumenyuk <boo1ean0807@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/boo1ean/all-requires/issues"
+  },
+  "homepage": "https://github.com/boo1ean/all-requires",
+  "dependencies": {
+    "detective": "^3.1.0",
+    "lodash": "^2.4.1",
+    "recursive-readdir": "^1.2.0"
+  }
+}
