@@ -4,7 +4,7 @@
   "description": "Get list of all required modules for directory",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tape test.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,8 @@
     "is-core-module": "^1.0.2",
     "lodash": "^2.4.1",
     "recursive-readdir": "^1.2.0"
+  },
+  "devDependencies": {
+    "tape": "^3.0.3"
   }
 }
