@@ -1,6 +1,6 @@
 {
   "name": "all-requires",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Get list of all required modules for directory",
   "main": "index.js",
   "scripts": {
