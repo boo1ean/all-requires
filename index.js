@@ -2,6 +2,7 @@ var detective = require('detective');
 var _ = require('lodash');
 var recursive = require('recursive-readdir');
 var fs = require('fs');
+var core = require('is-core-module');
 var local = /^\.|\//;
 
 // Only js and not from node_modules
@@ -12,7 +13,8 @@ var onlySourceFiles = function(filename) {
 };
 
 var onlyDepenencies = function(filename) {
-	return !local.test(filename);
+	return !local.test(filename)
+		&& !core(filename);
 };
 
 var find = function(path, cb) {

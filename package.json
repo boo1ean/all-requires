@@ -24,6 +24,7 @@
   "homepage": "https://github.com/boo1ean/all-requires",
   "dependencies": {
     "detective": "^3.1.0",
+    "is-core-module": "^1.0.2",
     "lodash": "^2.4.1",
     "recursive-readdir": "^1.2.0"
   }
