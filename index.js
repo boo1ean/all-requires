@@ -2,6 +2,8 @@ var detective = require('detective');
 var _ = require('lodash');
 var recursive = require('recursive-readdir');
 var fs = require('fs');
+var core = require('is-core-module');
+var local = /^\.|\//;
 
 // Only js and not from node_modules
 var onlySourceFiles = function(filename) {
@@ -10,8 +12,9 @@ var onlySourceFiles = function(filename) {
 		&& filename.indexOf('node_modules') === -1;
 };
 
-var onlyDepenencies = function(filename) {
-	return filename.indexOf('.') === -1;
+var onlyDependencies = function(filename) {
+	return !local.test(filename)
+		&& !core(filename);
 };
 
 var find = function(path, cb) {
@@ -34,7 +37,7 @@ var find = function(path, cb) {
 				requires = requires.concat(detective(content));
 
 				if (counter === 0) {
-					cb(null, _.unique(requires.filter(onlyDepenencies)));
+					cb(null, _.unique(requires.filter(onlyDependencies)));
 				}
 			});
 		}
