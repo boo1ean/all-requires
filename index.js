@@ -12,7 +12,7 @@ var onlySourceFiles = function(filename) {
 		&& filename.indexOf('node_modules') === -1;
 };
 
-var onlyDepenencies = function(filename) {
+var onlyDependencies = function(filename) {
 	return !local.test(filename)
 		&& !core(filename);
 };
@@ -37,7 +37,7 @@ var find = function(path, cb) {
 				requires = requires.concat(detective(content));
 
 				if (counter === 0) {
-					cb(null, _.unique(requires.filter(onlyDepenencies)));
+					cb(null, _.unique(requires.filter(onlyDependencies)));
 				}
 			});
 		}
