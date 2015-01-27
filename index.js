@@ -19,6 +19,10 @@ var onlyDependencies = function(filename) {
 
 var find = function(path, cb) {
 	recursive(path, function (err, filenames) {
+		if (err) {
+			return cb(err);
+		}
+
 		var jsFiles = filenames.filter(onlySourceFiles);
 
 		var counter = 0;
