@@ -24,9 +24,8 @@ var find = function(path, cb) {
 		var counter = 0;
 		var requires = [];
 
-		for (var i in jsFiles) {
+		jsFiles.forEach(function(filename) {
 			counter++;
-			var filename = jsFiles[i];
 
 			fs.readFile(filename, function(err, content) {
 				if (err) {
@@ -40,7 +39,7 @@ var find = function(path, cb) {
 					cb(null, unique(requires.filter(onlyDependencies)));
 				}
 			});
-		}
+		});
 	});
 };
 
