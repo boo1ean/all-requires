@@ -1,5 +1,5 @@
 var detective = require('detective');
-var _ = require('lodash');
+var unique = require('array-unique');
 var recursive = require('recursive-readdir');
 var fs = require('fs');
 var core = require('is-core-module');
@@ -19,14 +19,17 @@ var onlyDependencies = function(filename) {
 
 var find = function(path, cb) {
 	recursive(path, function (err, filenames) {
+		if (err) {
+			return cb(err);
+		}
+
 		var jsFiles = filenames.filter(onlySourceFiles);
 
 		var counter = 0;
 		var requires = [];
 
-		for (var i in jsFiles) {
+		jsFiles.forEach(function(filename) {
 			counter++;
-			var filename = jsFiles[i];
 
 			fs.readFile(filename, function(err, content) {
 				if (err) {
@@ -37,10 +40,10 @@ var find = function(path, cb) {
 				requires = requires.concat(detective(content));
 
 				if (counter === 0) {
-					cb(null, _.unique(requires.filter(onlyDependencies)));
+					cb(null, unique(requires.filter(onlyDependencies)));
 				}
 			});
-		}
+		});
 	});
 };
 
