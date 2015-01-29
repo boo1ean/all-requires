@@ -17,6 +17,10 @@ var onlyDependencies = function(filename) {
 		&& !core(filename);
 };
 
+var baseModule = function(filename) {
+	return filename.split('/')[0];
+};
+
 var find = function(path, cb) {
 	recursive(path, function (err, filenames) {
 		if (err) {
@@ -40,7 +44,7 @@ var find = function(path, cb) {
 				requires = requires.concat(detective(content));
 
 				if (counter === 0) {
-					cb(null, unique(requires.filter(onlyDependencies)));
+					cb(null, unique(requires.map(baseModule).filter(onlyDependencies)));
 				}
 			});
 		});
