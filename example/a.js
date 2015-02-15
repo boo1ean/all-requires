@@ -1,2 +1,2 @@
 var a = require('a');
-var b = require('./b');
+var b = require('./d');
