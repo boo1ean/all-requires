@@ -1,4 +1,5 @@
 var test = require('tape');
+var path = require('path');
 var find = require('./');
 
 test('it works', function (assert) {
@@ -17,11 +18,7 @@ test('it works using object', function (assert) {
 
 test('it should find only local deps', function (assert) {
 	find({ path: './example', onlyLocal: true }, function(err, requires) {
-		assert.deepEqual(requires.map(lastLetter).sort(), ['b', 'd']);
+		assert.deepEqual(requires.map(path.basename).sort(), ['b.js', 'd.js']);
 		assert.end();
 	});
 });
-
-function lastLetter (string) {
-	return string[string.length - 1];
-}

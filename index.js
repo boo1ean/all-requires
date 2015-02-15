@@ -112,17 +112,28 @@ function findLocalDependencies (index, requires) {
 		return requires;
 	}
 
-	var deps = findFileDependencies(requires[index++]);
+	var content;
+	var filepath = jsify(requires[index]);
+
+	try {
+		content = fs.readFileSync(filepath).toString();
+	} catch (e) {
+		filepath = filepath.slice(0, -3) + '/index.js'
+		content = fs.readFileSync(filepath).toString();
+	}
+
+	var deps = detective(content).filter(isLocal).map(resolvePathOrModule(filepath));
 	var diff = _.difference(deps, requires);
+
+	requires[index] = filepath;
 	requires = requires.concat(diff);
 
-	return findLocalDependencies(index, requires);
+	return findLocalDependencies(index + 1, requires);
 }
 
 function findFileDependencies (filepath) {
 	try {
-		var content = fs.readFileSync(jsify(filepath)).toString();
-		return detective(content).filter(isLocal).map(resolvePathOrModule(filepath));
+		return 
 	} catch (e) {
 		if (_.endsWith(filepath, 'index')) {
 			return [];
@@ -134,7 +145,7 @@ function findFileDependencies (filepath) {
 }
 
 function jsify (filepath) {
-	if (_.endsWith(file, '.js')) {
+	if (_.endsWith(filepath, '.js')) {
 		return filepath;
 	}
 
