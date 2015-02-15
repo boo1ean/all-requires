@@ -6,6 +6,63 @@ var _ = require('lodash');
 var path = require('path');
 var local = /^\./;
 
+function find (opts, cb) {
+	var path = getPath(opts);
+	var settings = getSettings(opts);
+
+	if (settings.onlyLocal) {
+		return findLocalRequires(path, cb);
+	}
+
+	return findRequiredModules(path, cb);
+
+	function getPath (opts) {
+		if (typeof opts === 'string') {
+			return opts;
+		}
+
+		if (typeof opts === 'object') {
+			assertOptions(opts);
+
+			return opts.path;
+		}
+
+		function assertOptions (opts) {
+			if (!opts.path) {
+				throw new Error('Path is required.');
+			}
+		}
+	}
+
+	function getSettings (opts) {
+		if (typeof opts === 'object') {
+			return opts;
+		}
+
+		return {};
+	}
+}
+
+function findRequiredModules (path, cb) {
+	findRequiresForDir(path, function (err, requires) {
+		if (err) {
+			return cb(err);
+		}
+
+		cb(null, requires.filter(isMarkedModule).map(baseModule));
+	});
+}
+
+function findLocalRequires (path, cb) {
+	findRequiresForDir(path, function (err, requires) {
+		if (err) {
+			return cb(err);
+		}
+
+		cb(null, findLocalDependencies(0, requires.filter(isNotMarkedModule)));
+	});
+}
+
 function findRequiresForDir (path, cb) {
 	recursive(path, function (err, filenames) {
 		if (err) {
@@ -36,48 +93,12 @@ function findRequiresForDir (path, cb) {
 			});
 		});
 	});
-
-	function getPath (opts) {
-		if (typeof opts === 'string') {
-			return opts;
-		}
-
-		if (typeof opts === 'object') {
-			assertOptions(opts);
-
-			return opts.path;
-		}
-
-		function assertOptions (opts) {
-			if (!opts.path) {
-				throw new Error('Path is required.');
-			}
-		}
-	}
-
-	function getSettings (opts) {
-		if (typeof opts === 'object') {
-			return opts;
-		}
-
-		return {};
-	}
-};
-
-function findRequiredModules (path, cb) {
-	findRequiresForDir(path, function (err, requires) {
-		if (err) {
-			return cb(err);
-		}
-
-		cb(null, requires.filter(isModule).map(baseModule));
-	});
 }
 
 function resolvePathOrModule (basepath) {
 	return function (relative) {
 		if (isLocal(relative)) {
-			return path.resolve(basepath, relative);
+			return path.resolve(path.dirname(basepath), relative);
 		}
 
 		// Really ugly workaround to mark module dependencies
@@ -86,7 +107,7 @@ function resolvePathOrModule (basepath) {
 	}
 }
 
-function findDependencies (index, requires) {
+function findLocalDependencies (index, requires) {
 	if (index >= requires.length) {
 		return requires;
 	}
@@ -95,12 +116,29 @@ function findDependencies (index, requires) {
 	var diff = _.difference(deps, requires);
 	requires = requires.concat(diff);
 
-	return findDependencies(index, requires);
+	return findLocalDependencies(index, requires);
 }
 
 function findFileDependencies (filepath) {
-	var content = fs.readFileSync(filepath).toString();
-	return detective(content).filter(onlyLocals).map(resolve(filepath));
+	try {
+		var content = fs.readFileSync(jsify(filepath)).toString();
+		return detective(content).filter(isLocal).map(resolvePathOrModule(filepath));
+	} catch (e) {
+		if (_.endsWith(filepath, 'index')) {
+			return [];
+		}
+
+		// Assume it was dir
+		return findFileDependencies(filepath + '/index');
+	}
+}
+
+function jsify (filepath) {
+	if (_.endsWith(file, '.js')) {
+		return filepath;
+	}
+
+	return filepath + '.js';
 }
 
 // Only js and not from node_modules
@@ -115,8 +153,12 @@ function isThirdParty (filename) {
 		&& !core(filename);
 }
 
-function isModule (filepath) {
+function isMarkedModule (filepath) {
 	return filepath[0] === '=';
+}
+
+function isNotMarkedModule (filepath) {
+	return filepath[0] !== '=';
 }
 
 function baseModule (filename) {
@@ -127,8 +169,4 @@ function isLocal (filename) {
 	return local.test(filename);
 }
 
-module.exports = findRequiredModules;
-
-//findRequiredModules('/Users/boo1ean/src/tds/redirect', function (err, res) {
-	//console.log(res);
-//});
+module.exports = find;
