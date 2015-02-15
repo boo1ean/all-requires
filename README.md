@@ -26,6 +26,7 @@ b.js
 
 ```javascript
 var b = require('b');
+var d = require('./d');
 ```
 
 c.js
@@ -40,8 +41,18 @@ Find all `third-party` dependencies for this dir:
 var find = require('all-requires');
 
 find('./dir', function(err, requires) {
-	console.log(requires); //[ 'a', 'b', 'c' ]
+	console.log(requires); // [ 'a', 'b', 'c' ]
 });
+```
+
+## Find all local requires
+
+Very recursively resolves all local requires
+
+```js
+find({ path: './dir', onlyLocal }, function (err, requires) {
+	console.log(requires); // ['b', 'd']
+})
 ```
 
 ## Note
