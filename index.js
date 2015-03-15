@@ -63,8 +63,8 @@ function findLocalRequires (path, cb) {
 	});
 }
 
-function findRequiresForDir (path, cb) {
-	recursive(path, function (err, filenames) {
+function findRequiresForDir (targetPath, cb) {
+	recursive(targetPath, function (err, filenames) {
 		if (err) {
 			return cb(err);
 		}
@@ -72,7 +72,7 @@ function findRequiresForDir (path, cb) {
 		var jsFiles = filenames.filter(onlySourceFiles);
 
 		var counter = 0;
-		var requires = [];
+		var requires = [].concat(jsFiles.map(resolve));
 
 		jsFiles.forEach(function(filename) {
 			counter++;
@@ -92,6 +92,10 @@ function findRequiresForDir (path, cb) {
 				}
 			});
 		});
+
+		function resolve (filepath) {
+			return path.resolve(filepath);
+		}
 	});
 }
 
