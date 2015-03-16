@@ -50,7 +50,7 @@ find('./dir', function(err, requires) {
 Very recursively resolves all local requires
 
 ```js
-find({ path: './dir', onlyLocal }, function (err, requires) {
+find({ path: './dir', onlyLocal: true }, function (err, requires) {
 	console.log(requires); // ['b', 'd']
 })
 ```
